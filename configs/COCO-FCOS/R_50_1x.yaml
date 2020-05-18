@@ -1,0 +1,25 @@
+# Do not change any other options on config files.
+# Especially, we fix backbones and input resolutions for reproduction purpose.
+# You may change configs for `SOLVER` when following linear scaling rule.
+_BASE_: "../Base-FCOS.yaml"
+MODEL:
+  WEIGHTS: "detectron2://ImageNetPretrained/MSRA/R-50.pkl"
+  # WEIGHTS: "output/fcos/R_50_1x/model_final.pth"
+  RESNETS:
+    DEPTH: 50
+    # we provide implementation of normalization option in improvements part.
+  # NORMALIZE_REG_TARGETS: True  # fix with True
+  PROPOSAL_GENERATOR:
+    NAME: "FCOS"
+  ROI_BOX_HEAD:
+    NAME: "FCOSHead"
+  FCOS:
+    NMS_POST_TOPK: 30
+INPUT:
+  MIN_SIZE_TRAIN: (800,)
+SOLVER:
+  WARMUP_METHOD: "constant"
+  WARMUP_FACTOR: 0.333
+  WARMUP_ITERS: 500
+OUTPUT_DIR: "output/fcos/test"
+# OUTPUT_DIR: "output/fcos/test"

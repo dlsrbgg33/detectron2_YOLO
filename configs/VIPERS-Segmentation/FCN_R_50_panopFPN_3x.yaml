@@ -1,0 +1,33 @@
+_BASE_: "../Base-RCNN-FPN.yaml"
+MODEL:
+  META_ARCHITECTURE: "SemanticSegmentor"
+  WEIGHTS: "detectron2://ImageNetPretrained/MSRA/R-50.pkl" # Pretrained from ImageNet
+  # WEIGHTS: "./output/viper_day_150000/model_0144999.pth"
+  SEM_SEG_HEAD:
+    NAME: "PanopFCNHead"
+    NUM_CLASSES: 16
+  LABEL_CON_VIPER: True
+# This is similar to the setting used in Mask R-CNN paper, Appendix A
+# But there are some differences, e.g., we did not initialize the output
+# layer using the corresponding classes from COCO
+INPUT:
+  MIN_SIZE_TRAIN: (856, 888, 920, 952, 984, 1016, 1048, 1080)
+  MIN_SIZE_TRAIN_SAMPLING: "choice"
+  MIN_SIZE_TEST: 1080
+  MAX_SIZE_TRAIN: 1920
+  MAX_SIZE_TEST: 1920
+DATASETS:
+  TRAIN: ("vipers_sem_seg_train",)
+  # TRAIN: ("cityscapes_fine_sem_seg_train",)
+  TEST: ("vipers_sem_seg_val",)
+  # TEST: ("cityscapes_fine_sem_seg_val",)
+SOLVER:
+  BASE_LR: 0.0025
+  STEPS: (18000,)
+  MAX_ITER: 150000
+  IMS_PER_BATCH: 4
+TEST:
+  EVAL_PERIOD: 150000
+
+OUTPUT_DIR: "./output/viper_day_150000_video"
+TASK_VIDEO: False

@@ -1,0 +1,58 @@
+_BASE_: "../Base-RCNN-FPN.yaml"
+MODEL:
+  # WEIGHTS: "detectron2://ImageNetPretrained/MSRA/R-50.pkl" # Pretrained from ImageNet
+  WEIGHTS: "./output/viper_img_FCNFPN_9x4_800_crop/model_final.pth" # Pretrained from ImageNet
+  META_ARCHITECTURE: "VideoSemanticSegmentor"
+  BACKBONE:
+    NAME: "build_resnet_vpsfpn_backbone"
+  EXTRA_NECK:
+    NAME: "BFP_TCEA"
+    REFINE_LEV: 0
+    REFINE_TYPE: 'conv'
+    EXTRA_ON: True
+    NFRAMES: 2
+    CENTER: 0
+  SEM_SEG_HEAD:
+    NAME: "FCNHead"
+    NUM_CLASSES: 16
+  LABEL_CON_VIPER: True
+# This is similar to the setting used in Mask R-CNN paper, Appendix A
+# But there are some differences, e.g., we did not initialize the output
+# layer using the corresponding classes from COCO
+INPUT:
+  MIN_SIZE_TRAIN: (900,1350)
+  MAX_SIZE_TRAIN: 1600
+  MIN_SIZE_TRAIN_SAMPLING: "range"
+  MIN_SIZE_TEST: 1080
+  MAX_SIZE_TEST: 1920
+  CROP_ON: True
+  CROP_SIZE: (800, 1600)
+  RATIO_RESIZE: True
+DATASETS:
+  TRAIN: ("vipers_sem_v_seg_train",)
+  ### What is interval between ref and target image in train
+  INTERF_TRAIN: 5
+  # TRAIN: ("cityscapes_fine_sem_seg_train",)
+  TEST: ("vipers_sem_v_seg_val",)
+  ### What is interval between ref and target image in test
+  INTERF_TEST: 5
+  # TEST: ("cityscapes_fine_sem_seg_val",)
+  ### How many frames are ignored from the first when evaluating.
+  INF_START: 5
+  ### What is interval between prediction for evaluation.
+  SKIP_EVAL: 5
+  ROAD_SCENE: "viper"
+  VID_CHOICE: 'radn_range'
+  TASK_VIDEO: True
+  REV_TEST: False
+
+SOLVER:
+  BASE_LR: 0.005
+  STEPS: (60000, 80000)
+  MAX_ITER: 90000
+  IMS_PER_BATCH: 4
+TEST:
+  EVAL_PERIOD: 90000
+
+OUTPUT_DIR: "./output/viper_vid_FCNFPN_9x4_800_crop_STagg_randn_choice"
+# TASK_VIDEO: True
