@@ -1,1 +1,1 @@
-This repository re-implements Faster-RCNN and analyze line-by-line code through detectron2 format.
+This repository re-implements YOLO and port the module into detectron2 format.
